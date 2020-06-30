@@ -1,15 +1,14 @@
-import * as React from 'react';
-import * as codemirror from 'codemirror';
+import React from 'react';
+import codemirror from 'codemirror';
+import vim from './vim';
 
-declare let global: any;
-declare let require: any;
+// declare let global: any;
+// declare let require: any;
 
-const SERVER_RENDERED = (typeof navigator === 'undefined' || global['PREVENT_CODEMIRROR_RENDER'] === true);
+const SERVER_RENDERED = false
 
-let cm;
-if (!SERVER_RENDERED) {
-  cm = require('codemirror');
-}
+let cm = codemirror
+vim(cm)
 
 export interface IDefineModeOptions {
   fn: () => codemirror.Mode<any>;
@@ -220,9 +219,9 @@ class Shared implements ICommon {
           break;
         }
         case 'onCursor': {
-          this.editor.on('cursorActivity', (cm) => {
-            this.props.onCursor(this.editor, this.editor.getDoc().getCursor());
-          });
+          // this.editor.on('cursorActivity', (cm) => {
+          //   this.props.onCursor(this.editor, this.editor.getDoc().getCursor());
+          // });
         }
           break;
         case 'onCursorActivity': {
@@ -425,17 +424,17 @@ export class Controlled extends React.Component<IControlledCodeMirror, any> {
 
     const optionDelta = Object.keys(userDefinedOptions).some(key => this.editor.getOption(key as any) !== userDefinedOptions[key]);
 
-    if (optionDelta) {
-      Object.keys(userDefinedOptions).forEach(key => {
+    // if (optionDelta) {
+    //   Object.keys(userDefinedOptions).forEach(key => {
 
-        if (_options.hasOwnProperty(key)) {
-          if (this.editor.getOption(key as any) !== userDefinedOptions[key]) {
-            this.editor.setOption(key as any, userDefinedOptions[key]);
-            this.mirror.setOption(key as any, userDefinedOptions[key]);
-          }
-        }
-      });
-    }
+    //     if (_options.hasOwnProperty(key)) {
+    //       if (this.editor.getOption(key as any) !== userDefinedOptions[key]) {
+    //         this.editor.setOption(key as any, userDefinedOptions[key]);
+    //         this.mirror.setOption(key as any, userDefinedOptions[key]);
+    //       }
+    //     }
+    //   });
+    // }
     if (!this.hydrated) {
       this.deferred ? this.resolveChange(props.value) : this.initChange(props.value || '')
     }
@@ -529,6 +528,7 @@ export class Controlled extends React.Component<IControlledCodeMirror, any> {
 
     this.editor.on('cursorActivity', () => {
       this.mirror.setCursor(this.editor.getDoc().getCursor());
+      this.props.onCursor(this.editor, this.editor.getDoc().getCursor());
     });
 
     this.editor.on('beforeChange', (cm, data) => {
@@ -681,17 +681,17 @@ export class UnControlled extends React.Component<IUnControlledCodeMirror, any> 
 
     const _options = props && props.options ? props.options : {};
     const userDefinedOptions = Object.assign({}, cm.defaults, (this.editor as any).options, _options);
-    const optionDelta = Object.keys(userDefinedOptions).some(key => this.editor.getOption(key as any) !== userDefinedOptions[key]);
+    // const optionDelta = Object.keys(userDefinedOptions).some(key => this.editor.getOption(key as any) !== userDefinedOptions[key]);
 
-    if (optionDelta) {
-      Object.keys(userDefinedOptions).forEach(key => {
-        if (_options.hasOwnProperty(key)) {
-          if (this.editor.getOption(key as any) !== userDefinedOptions[key]) {
-            this.editor.setOption(key as any, userDefinedOptions[key]);
-          }
-        }
-      });
-    }
+    // if (optionDelta) {
+    //   Object.keys(userDefinedOptions).forEach(key => {
+    //     if (_options.hasOwnProperty(key)) {
+    //       if (this.editor.getOption(key as any) !== userDefinedOptions[key]) {
+    //         this.editor.setOption(key as any, userDefinedOptions[key]);
+    //       }
+    //     }
+    //   });
+    // }
 
     if (!this.hydrated) {
       const doc = this.editor.getDoc();
